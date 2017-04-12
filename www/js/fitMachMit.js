@@ -12,7 +12,7 @@ var projectNames = [];     // json {projects:[{name:'',fileName:'',code:''}]};
 
 var getProjectNameData = function( pName ){
 	for (var i = 0; i < projectNames.length; i++){
-		if (projectNames[i].name == pname) return projectNames[i];
+		if (projectNames[i].name == pName) return projectNames[i];
 	}
 	return null;
 };
@@ -25,7 +25,14 @@ var getProjectNameIndex = function( pName ){
 
 var readProjectData = function( fn ){       // {marker:[{name:'',lat:number,lng:number},..]}
 	var pd = null;
-	fs.readFile( fn, function( err, data ){
+	var str = fs.readFileSync( fn, {encodeing:'utf8'} );
+	if ( str.length > 0 ) {
+		pd = JSON.parse( str );
+		return pd;
+	} else {
+		return null;
+	}
+/*	function( err, data ){
 		try{
 			if (!err){
 				pd = JSON.parse( data );
@@ -37,8 +44,7 @@ var readProjectData = function( fn ){       // {marker:[{name:'',lat:number,lng:
 		} catch ( e ) {
 			pd = null;
 		}
-	});
-	return pd;
+	}); */
 };
 
 var builtProjectsData = function(){
@@ -148,7 +154,7 @@ app.post( '/getProject', function( req, res ){
 			pdata = readProjectData( pndata.fileName );
 			if (pdata != null){
 				res.writeHead( 200, {'Content-Type':'text/plain'} ); 
-				res.end( JSON.stringify( { markers: pdata } ) );				
+				res.end( JSON.stringify( { markers: pdata.marker } ) );				
 			} else {
 				res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 				res.end( 'Daten nicht verfügbar!' );				
@@ -228,7 +234,7 @@ app.post( '/createMarker',function( req, res ){
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.body.project;
+	var pName = req.body.project;
 	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
