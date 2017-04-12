@@ -18,7 +18,7 @@ var getProjectNameData = function( pName ){
 };
 var getProjectNameIndex = function( pName ){
 	for (var i = 0; i < projectNames.length; i++){
-		if (projectNames[i].name == pname) return i;
+		if (projectNames[i].name == pName) return i;
 	}
 	return -1;
 };
@@ -337,13 +337,13 @@ app.put( '/marker',function( req, res ){
 	});
 });
 // PUT modify a Marker name
-app.put( '/marker',function( req, res ){
+app.put( '/markername',function( req, res ){
 	if ( !req.body.project || !req.body.oldName || !req.body.newName ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.body.project;
+	var pName = req.body.project;
 //	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
@@ -412,7 +412,7 @@ app.delete( '/marker',function( req, res ){
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.body.project;
+	var pName = req.body.project;
 //	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
