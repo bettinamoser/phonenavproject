@@ -64,7 +64,8 @@ var nameFileExists = false;
 fs.exists( nameFile, function( exists ){
 	nameFileExists = exists;
 });
-if ( nameFileExists ){
+console.log( 'projectNames-file existsiert: ' + nameFileExists );
+try{
 	fs.readFile( nameFile, function( err, data ){
 		try{
 			if (!err){
@@ -77,6 +78,8 @@ if ( nameFileExists ){
 			projectNames = [];
 		}
 	});
+} catch ( e ) {
+	console.log( 'Kann Projektedatei nicht laden : ', e );
 };
 
 var server = app.listen( 20001, function(){
@@ -108,7 +111,7 @@ app.use( function( req, res, next ){
 // GET Projects
 app.get( '/getProjects', function( req, res ){
 	res.writeHead( 200, {'Content-Type':'text/plain'} ); 
-	res.end( JSON.stringify( {data: builtProjectsData() } ) );				
+	res.end( JSON.stringify( builtProjectsData() ) );				
 });
 
 // POST Project
