@@ -107,6 +107,22 @@ app.get( '/getProjects', function( req, res ){
 	res.end( JSON.stringify( {data: builtProjectsData() } ) );				
 });
 
+// GET Project
+app.get( '/login', function( req, res ){
+	if ( !req.params.user || !req.params.pw ){
+		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
+		res.end( 'Es fehlen Daten im Request!' );				
+		return;
+	};
+	if ( (req.params.user == 'admin') && (req.params.pw == 'admin') ){
+		res.writeHead( 200, {'Content-Type':'text/plain'} ); 
+		res.end( 'Du darfst!' );				
+	} else {
+		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
+		res.end( 'Du darfst nicht!' );				
+	}
+});
+
 
 // GET Project
 app.get( '/getProject', function( req, res ){
