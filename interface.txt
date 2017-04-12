@@ -1,0 +1,31 @@
+Interfaces
+
+GET?getProjects
+	data: none	
+	return content: {"projects":[{"name":'',"code":''}, .... ]}
+	
+GET?getProject
+	data: {"name":'',"code":''}	
+	return content: {"markers":[{"name":'',"lat":number,"lng":number}, .... ]}
+	
+POST?createProject
+	data: {"name":''}	
+	return content: {"code":''}
+PUT?project    // modify project
+	data: {"oldName":'',"newName":''}
+DELETE?project
+	data: {"name":''}	
+POST?createMarker
+	data: {"project":'',"name":'',"lat":number,"lng":number}	
+	return content : {created:true}
+PUT?marker     // modify marker latLng
+	data: {"project":'',"name":'',"lat":number,"lng":number}	// ändern lat/lng
+PUT?markername     // modify marker name
+	data: {"project":'',"oldName":'',"newName":''}	
+DELETE?marker
+	data: {"project":'',"name":''}	
+	
+für Admin
+GET?login
+	data: {"user":'',"pw":''}
+
