@@ -111,16 +111,17 @@ app.get( '/getProjects', function( req, res ){
 	res.end( JSON.stringify( {data: builtProjectsData() } ) );				
 });
 
-// GET Project
-app.get( '/login', function( req, res ){
-	if ( !req.params.user || !req.params.pw ){
+// POST Project
+app.post( '/login', function( req, res ){
+//	console.log( req ); 
+	if ( !req.body['user'] || !req.body['pw'] ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	if ( (req.params.user == 'admin') && (req.params.pw == 'admin') ){
+	if ( (req.body.user == 'admin') && (req.body.pw == 'admin') ){
 		res.writeHead( 200, {'Content-Type':'text/plain'} ); 
-		res.end( {id: getUserId(), comment:'Du darfst!' );				
+		res.end( 'Du darfst!',{id: getUserId()} );				
 	} else {
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Du darfst nicht!' );				
@@ -128,15 +129,15 @@ app.get( '/login', function( req, res ){
 });
 
 
-// GET Project
-app.get( '/getProject', function( req, res ){
-	if ( !req.params.name || !req.params.code ){
+// POST Project
+app.post( '/getProject', function( req, res ){
+	if ( !req.body.name || !req.body.code ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.params.name;
-	var pcode = req.params.code;
+	var pname = req.body.name;
+	var pcode = req.body.code;
 	var pndata = getProjectNameData( pname );
 	var pdata;
 	if (pndata != null){
@@ -159,16 +160,17 @@ app.get( '/getProject', function( req, res ){
 var builtProjectFileName = function( pname ){
 	return pname.replace(/\s/g, '_') + '.json';
 };
+
 // POST
 app.post( '/createProject', function( req, res ){
-	if ( !req.params.name ){
+	console.log( req.body );
+	if ( !req.body.name ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Kein Projektname!' );				
 		return;
 	};
-	var pName = req.params.name;
+	var pName = req.body.name;
 	var pnd = getProjectNameData(pName);
-	var writeSuccess = false;
 	if ( pnd != null){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Projekt existiert bereits!' );				
@@ -178,7 +180,8 @@ app.post( '/createProject', function( req, res ){
 	var pnd = {name: pName,fileName:builtProjectFileName( pName ),code: getNewCode() };
 	writeProjectData( pnd.fileName, {marker:[]}, function( err ){
 		if(!err){
-			writeSuccess = true;
+			console.log( 'write pndata : success' );
+			wPnData();
 			return;
 		} else {
 			res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -186,19 +189,20 @@ app.post( '/createProject', function( req, res ){
 			return;
 		}
 	});
-	if (!writeSuccess) return;
-	projectNames.push( pnd );		
-	// write projectNames data
-	writeProjectNames( function( err ){
-		if(!err){
-			res.writeHead( 200, {'Content-Type':'text/plain'} ); 
-			res.end( JSON.stringify( { code:pnd.code } ) );				
-		} else {
-			res.writeHead( 404, {'Content-Type':'text/plain'} ); 
-			res.end( 'Kann Daten nicht speichern' );
-			fs.unlink( pnd.fileName, function( err ){ return; });
-		}
-	});
+	var wPnData = function(){
+		projectNames.push( pnd );		
+		// write projectNames data
+		writeProjectNames( function( err ){
+			if(!err){
+				res.writeHead( 200, {'Content-Type':'text/plain'} ); 
+				res.end( JSON.stringify( { code:pnd.code } ) );				
+			} else {
+				res.writeHead( 404, {'Content-Type':'text/plain'} ); 
+				res.end( 'Kann Daten nicht speichern' );
+				fs.unlink( pnd.fileName, function( err ){ return; });
+			}
+		});
+	};
 });
 
 var findMarker = function( mName, pData ){
@@ -216,13 +220,13 @@ var getMarkerIndex = function( mName, pData ){
 
 // POST create a Marker for a project
 app.post( '/createMarker',function( req, res ){
-	if ( !req.params.project || !req.params.name || !req.params.lat || !req.params.lng){
+	if ( !req.body.project || !req.body.name || !req.body.lat || !req.body.lng){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.params.project;
-	var md = {name:req.params.name,lat:req.params.lat,lng:req.params.lng};
+	var pname = req.body.project;
+	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -256,13 +260,13 @@ app.post( '/createMarker',function( req, res ){
 
 // modify project
 app.put( '/project', function ( req, res ){
-	if ( !req.params.oldName || !req.params.newName ){
+	if ( !req.body.oldName || !req.body.newName ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var oldName = req.params.oldName;
-	var newName = req.params.newName;
+	var oldName = req.body.oldName;
+	var newName = req.body.newName;
 	var pndi = getProjectNameIndex( oldName );
 	if ( pndi == -1 ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -286,13 +290,13 @@ app.put( '/project', function ( req, res ){
 
 // PUT modify a Marker
 app.put( '/marker',function( req, res ){
-	if ( !req.params.project || !req.params.name || !req.params.lat || !req.params.lng){
+	if ( !req.body.project || !req.body.name || !req.body.lat || !req.body.lng){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.params.project;
-	var md = {name:req.params.name,lat:req.params.lat,lng:req.params.lng};
+	var pname = req.body.project;
+	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -325,13 +329,13 @@ app.put( '/marker',function( req, res ){
 });
 // PUT modify a Marker name
 app.put( '/marker',function( req, res ){
-	if ( !req.params.project || !req.params.oldName || !req.params.newName ){
+	if ( !req.body.project || !req.body.oldName || !req.body.newName ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.params.project;
-//	var md = {name:req.params.name,lat:req.params.lat,lng:req.params.lng};
+	var pname = req.body.project;
+//	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -344,13 +348,13 @@ app.put( '/marker',function( req, res ){
 		res.end( 'Kann Projektdaten nicht lesen!' );				
 		return;
 	}
-	var mdi = getMarkerIndex( req.params.oldName, pd );	
+	var mdi = getMarkerIndex( req.body.oldName, pd );	
 	if ( mdi == -1 ) {
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Marker existsiert nicht!' );				
 		return;
 	};
-	pd.marker[mdi].name = req.params.newName;
+	pd.marker[mdi].name = req.body.newName;
 	writeProjectData( pnd.fileName, pd, function( err ){
 		if(!err){
 			res.writeHead( 200, {'Content-Type':'text/plain'} ); 
@@ -365,12 +369,12 @@ app.put( '/marker',function( req, res ){
 
 // delete project
 app.delete( '/project', function ( req, res ){
-	if ( !req.params.name ){
+	if ( !req.body.name ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pName = req.params.name;
+	var pName = req.body.name;
 	var pndi = getProjectNameIndex( oldName );
 	if ( pndi == -1 ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -394,13 +398,13 @@ app.delete( '/project', function ( req, res ){
 
 // DELETE a Marker
 app.delete( '/marker',function( req, res ){
-	if ( !req.params.project || !req.params.name ){
+	if ( !req.body.project || !req.body.name ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.params.project;
-//	var md = {name:req.params.name,lat:req.params.lat,lng:req.params.lng};
+	var pname = req.body.project;
+//	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
@@ -413,7 +417,7 @@ app.delete( '/marker',function( req, res ){
 		res.end( 'Kann Projektdaten nicht lesen!' );				
 		return;
 	}
-	var mdi = getMarkerIndex( req.params.oldName, pd );	
+	var mdi = getMarkerIndex( req.body.oldName, pd );	
 	if ( mdi == -1 ) {
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Marker existsiert nicht!' );				
