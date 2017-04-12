@@ -384,7 +384,7 @@ app.delete( '/project', function ( req, res ){
 		return;
 	};
 	var pName = req.body.name;
-	var pndi = getProjectNameIndex( oldName );
+	var pndi = getProjectNameIndex( pName );
 	if ( pndi == -1 ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Unbekanntes Project!' );				
@@ -426,7 +426,7 @@ app.delete( '/marker',function( req, res ){
 		res.end( 'Kann Projektdaten nicht lesen!' );				
 		return;
 	}
-	var mdi = getMarkerIndex( req.body.oldName, pd );	
+	var mdi = getMarkerIndex( req.body.name, pd );	
 	if ( mdi == -1 ) {
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Marker existsiert nicht!' );				
