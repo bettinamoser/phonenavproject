@@ -55,6 +55,10 @@ var getNewCode = function(){
 	return Math.trunc( Math.random() * 10000 ) + '';
 }
 
+var getUserId = function(){
+	return Math.trunc( Math.random() * 1000000 ) + '';
+}
+
 var nameFileExists = false;
 
 fs.exists( nameFile, function( exists ){
@@ -116,7 +120,7 @@ app.get( '/login', function( req, res ){
 	};
 	if ( (req.params.user == 'admin') && (req.params.pw == 'admin') ){
 		res.writeHead( 200, {'Content-Type':'text/plain'} ); 
-		res.end( 'Du darfst!' );				
+		res.end( {id: getUserId(), comment:'Du darfst!' );				
 	} else {
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Du darfst nicht!' );				
