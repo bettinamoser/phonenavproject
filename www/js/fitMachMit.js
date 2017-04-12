@@ -5,7 +5,7 @@ var express = require( 'express' );
 var bp = require( 'body-parser' );
 var app = express();
 
-var doLog = true;
+var doLog = false;
 
 var nameFile = 'projects.json';
 var projectNames = [];     // json {projects:[{name:'',fileName:'',code:''}]};
@@ -172,7 +172,7 @@ var builtProjectFileName = function( pname ){
 
 // POST
 app.post( '/createProject', function( req, res ){
-	console.log( req.body );
+	if ( doLog ) console.log( req.body );
 	if ( !req.body.name ){
 		res.writeHead( 404, {'Content-Type':'text/plain'} ); 
 		res.end( 'Kein Projektname!' );				
@@ -189,7 +189,7 @@ app.post( '/createProject', function( req, res ){
 	var pnd = {name: pName,fileName:builtProjectFileName( pName ),code: getNewCode() };
 	writeProjectData( pnd.fileName, {marker:[]}, function( err ){
 		if(!err){
-			console.log( 'write pndata : success' );
+			if ( doLog ) console.log( 'write pndata : success' );
 			wPnData();
 			return;
 		} else {
