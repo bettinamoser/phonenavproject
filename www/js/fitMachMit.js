@@ -304,7 +304,7 @@ app.put( '/marker',function( req, res ){
 		res.end( 'Es fehlen Daten im Request!' );				
 		return;
 	};
-	var pname = req.body.project;
+	var pName = req.body.project;
 	var md = {name:req.body.name,lat:req.body.lat,lng:req.body.lng};
 	var pnd = getProjectNameData( pName );
 	if ( pnd == null){
