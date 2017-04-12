@@ -1,4 +1,4 @@
-Interfaces
+﻿Interfaces
 
 GET?getProjects
 	data: none	
@@ -17,15 +17,14 @@ DELETE?project
 	data: {"name":''}	
 POST?createMarker
 	data: {"project":'',"name":'',"lat":number,"lng":number}	
-	return content : {created:true}
 PUT?marker     // modify marker latLng
 	data: {"project":'',"name":'',"lat":number,"lng":number}	// ändern lat/lng
 PUT?markername     // modify marker name
 	data: {"project":'',"oldName":'',"newName":''}	
 DELETE?marker
 	data: {"project":'',"name":''}	
-	
 für Admin
 GET?login
 	data: {"user":'',"pw":''}
+	return content: {"id":'', "comment":''}
 
